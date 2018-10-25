@@ -1,18 +1,14 @@
-TARGET = makeart
-CFLAGS = -Wall -g -Wextra
+TARGET = main
+CFLAGS = -Wall -g -Wextra -pthread
 CC = gcc
-CRYPT = -lcryp
+CRYPT =-lcrypt
 
-$(TARGET): parse.o main.o
-	$(CC) $(CFLAGS) -o $(TARGET) main.o parse.o $(CRYPT)
+$(TARGET): main.o
+	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).o $(CRYPT)
 
 main.o: main.c
-	$(CC) $(CFLAGS) -c -o main.o main.c $(CRYPT)
+	$(CC) $(CFLAGS) -c -o main.o main.c 
 
-parse.o: parse.c
-	$(CC) $(CFLAGS) -c -o parse.o parse.c $(CRYPT)
-
-clean: 
-	rm *.o $(TARGET) 
+clean: rm *.o $(TARGET)
 
 remake: clean $(TARGET)
