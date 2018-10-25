@@ -5,7 +5,7 @@ void brutForce(char hash[100])
 {
     char check[100] = "";
     
-    while(){
+    while(true){
         //Finner hash
     }
     //Riktig hash
