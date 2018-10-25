@@ -4,7 +4,7 @@
 
 void brutForce()
 {
-
+    printf("Hello Wordl");
 }
 
 int main(int argc, char const *argv[])
