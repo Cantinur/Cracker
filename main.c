@@ -2,14 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <crypt.h>
+#include <unistd.h>
 #include <pthread.h>
 
 static char salt[13], hash[50], correctPassword[25];
 static FILE* file;
 static int isPasswordHere = 0;
 
+
 //static const char passchars[] =
 //"abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
+
+typedef struct fileIterator{
+    int start;
+    int end;
+} fileIterator;
 
 void setSalt(){
     strncpy(salt, hash, 12);
@@ -31,6 +38,7 @@ void timeToFree()
 
 void* findInFile_runner(void* arg)
 {
+    printf("NEW THREAD\n");
     char* password = (char*) calloc(20, sizeof(char));
 
     for (int i = 0; i < 110; i++){
@@ -39,8 +47,8 @@ void* findInFile_runner(void* arg)
 
         if (strcmp(hash,encrypted) == 0){
             isPasswordHere = 1;
+            printf("FOUND ANSWER!\n");
             strncpy(correctPassword, password, 25);
-            timeToFree();
         }
         if (isPasswordHere == 1){break;}
     }
@@ -48,24 +56,26 @@ void* findInFile_runner(void* arg)
     pthread_exit(0);
 }
 
-typedef struct fileIterator{
-    int *start;
-    int *end;
-} fileIterator;
-
 int main(int argc, char const *argv[])
 {
     strncpy(hash, argv[1], 50);
     setSalt();
     setFile();
-    
 
-    pthread_t tid;
+    int num_thread = 100;
+
+    pthread_t tids[num_thread];
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    pthread_create(&tid, &attr, findInFile_runner, (void *)&tid);
-    pthread_join(tid, NULL);
+    for (int i = 0; i < num_thread; i++){
+        pthread_create(&tids[i], &attr, findInFile_runner, (void *)&tids[i]);
+    }
+
+    for (int i = 0; i < num_thread; i++){
+        pthread_join(tids[i], NULL);
+    }
     printf("%s\n", correctPassword);
+    timeToFree();
 
     return 0;
 }
