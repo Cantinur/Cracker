@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <crypt.h>
-#include <unistd.h>
 #include <pthread.h>
 
 static char salt[13], hash[50], correctPassword[25];
@@ -62,18 +61,24 @@ int main(int argc, char const *argv[])
     setSalt();
     setFile();
 
-    int num_thread = 100;
+    int num_thread = 1000;
+    int threads_Paralell = 10;
 
-    pthread_t tids[num_thread];
+    
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    for (int i = 0; i < num_thread; i++){
-        pthread_create(&tids[i], &attr, findInFile_runner, (void *)&tids[i]);
+
+    for (int i = 0; i < num_thread; i+=threads_Paralell){
+        pthread_t tids[threads_Paralell];
+        for(int j = 0; j < threads_Paralell; j++){
+            pthread_create(&tids[i], &attr, findInFile_runner, (void *)&tids[i]);
+        }
+        for(int j = 0; j < threads_Paralell; j++){
+            pthread_join(tids[i], NULL);
+        }
+        if (isPasswordHere == 1){break;}
     }
 
-    for (int i = 0; i < num_thread; i++){
-        pthread_join(tids[i], NULL);
-    }
     printf("%s\n", correctPassword);
     timeToFree();
 

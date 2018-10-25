@@ -1,7 +1,7 @@
 TARGET = main
-CFLAGS = -Wall -g -Wextra -pthread
+CFLAGS = -Wall -g -Wextra -std=c99 -pthread
 CC = gcc
-CRYPT = -std=c99 -lcrypt
+CRYPT = -lcrypt
 
 $(TARGET): main.o
 	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).o $(CRYPT)
