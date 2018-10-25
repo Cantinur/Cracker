@@ -12,12 +12,8 @@ static int isPasswordHere = 0;
 //static const char passchars[] =
 //"abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 
-typedef struct fileIterator{
-    int start;
-    int end;
-} fileIterator;
-
-void setSalt(){
+void setSalt()
+{
     strncpy(salt, hash, 12);
 }
 
@@ -27,12 +23,6 @@ void setFile()
     sprintf(filePath, "./dictionary.txt");
     file = fopen(filePath, "r");
     free(filePath);
-}
-
-void timeToFree()
-{
-    //free(hash);
-    fclose(file);
 }
 
 void* findInFile_runner(void* arg)
@@ -80,7 +70,7 @@ int main(int argc, char const *argv[])
     }
 
     printf("%s\n", correctPassword);
-    timeToFree();
+    fclose(file);
 
     return 0;
 }
