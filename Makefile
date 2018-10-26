@@ -3,11 +3,11 @@ CFLAGS = -Wall -g -Wextra -std=c99 -pthread
 CC = gcc
 CRYPT = -lcrypt
 
-$(TARGET): main.o
+$(TARGET): $(TARGET).o
 	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).o $(CRYPT)
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c -o main.o main.c 
+$(TARGET).o: $(TARGET).c
+	$(CC) $(CFLAGS) -c -o $(TARGET).o $(TARGET).c 
 
 clean: rm *.o $(TARGET)
 
