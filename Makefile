@@ -1,4 +1,4 @@
-TARGET = main
+TARGET = brut
 CFLAGS = -Wall -g -Wextra -std=c99 -pthread
 CC = gcc
 CRYPT = -lcrypt

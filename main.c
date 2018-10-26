@@ -7,8 +7,8 @@
 
 static char salt[13], hash[50];
 static FILE* file;
-
-// static int isPasswordHere = 0;
+static struct crypt_data* data;
+static pthread_mutex_t stopMutex;
 
 
 
@@ -38,27 +38,28 @@ void setFile()
 
 void* findInFile_runner(void* arg)
 {
-    char* password = (char*) calloc(20, sizeof(char));
+ 
     struct shared_data_runner *arg_struct = 
                 (struct shared_data_runner*) arg;
 
-	struct crypt_data* data = malloc(sizeof(struct crypt_data));
-	data->initialized = 0;
-    
-    // printf("Run from %d to %d\n", arg_struct->start, arg_struct->end);
-    for (int i = arg_struct->start; i < arg_struct->end; i++){
-        fscanf(file, "%s", password);
-        char* encrypted = crypt_r(password, salt, data);
+    if(arg_struct->found_correct_answer == 0){
+        char* password = (char*) calloc(20, sizeof(char));   
+        printf("Run from %d to %d\n", arg_struct->start, arg_struct->end);
+        for (int i = arg_struct->start; i < arg_struct->end; i++){
+            fscanf(file, "%s", password);
+            char* encrypted = password; //crypt_r(password, salt, data);
 
-        if (strcmp(hash,encrypted) == 0){
-            // printf("FOUND CORRECT!\n");
-            arg_struct -> found_correct_answer = 1;
-            strncpy(arg_struct->correctPassword, password, 25);
-            // printf("SHOULD BE: %s\n", arg_struct->correctPassword);
+            if (strcmp(hash,encrypted) == 0){
+                pthread_mutex_lock(&stopMutex);
+                arg_struct -> found_correct_answer = 1;
+                strncpy(arg_struct->correctPassword, password, 25);
+                pthread_mutex_unlock(&stopMutex);
+                break;
+            }
+            if(arg_struct->found_correct_answer == 1){break;}
         }
-        if (arg_struct->found_correct_answer == 1){break;}
+        free(password);
     }
-    free(password);
     pthread_exit(0);
 }
 
@@ -70,21 +71,21 @@ int main(int argc, char const *argv[])
 
     int num_thread = 10000;
     int threads_Paralell = 100;
-    struct crypt_data* data = malloc(sizeof(struct crypt_data));
+    data = malloc(sizeof(struct crypt_data));
 	data->initialized = 0;
 
     
     pthread_attr_t attr;
     pthread_attr_init(&attr);
+    pthread_t tids[threads_Paralell];
     struct shared_data_runner arg[threads_Paralell];
     int found_correct = 0;
 
-    for (int i = 0; i < num_thread; i+=threads_Paralell){
-        pthread_t tids[threads_Paralell];
-
+    for (int i = 0; i < num_thread-1; i+=threads_Paralell){
+        if (found_correct == 1){break;}
 
         for(int j = 0; j < threads_Paralell; j++){
-            arg[j].found_correct_answer = 0;
+            arg[j].found_correct_answer = found_correct;
             arg[j].start = (j+i < 1) ? 0 : (threads_Paralell*(j+i))+1;
             arg[j].end = threads_Paralell*(i+j > 0 ? (j+i+1) : 1 );
             pthread_create(&tids[j], &attr, findInFile_runner, &arg[j]);
@@ -96,13 +97,11 @@ int main(int argc, char const *argv[])
                 printf("ANSWER:\n");
                 printf("%s\n", arg[j].correctPassword); 
                 found_correct = 1;
+                break;
             }
         }
-
-        if (found_correct == 1){break;}
     }
-
+    free(data);
     fclose(file);
-
     return 0;
 }
