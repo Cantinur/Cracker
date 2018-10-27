@@ -25,18 +25,18 @@ void test_password(char password[12]){
         printf("\nFound: Password is %s\n", password);
         strncpy(correct_password, password, 40);
         pw_found = 1;
+        return;
     }
 }
 
 void letter_iterator(int k)
 {
-    if(pw_found== 1){return;}
+    if(pw_found== 1|| k < 0){return;}
     for(int i = 0; i < ALPHABET_SIZE; i++){
         password[k]=passchars[i];
         test_password(password); 
-        if(k > 0){
-            letter_iterator(k-1);
-        }
+        if(k > 0){letter_iterator(k-1);}
+        if(pw_found== 1){return;}
     }
 }
 
@@ -45,10 +45,11 @@ void brute_forec(char password[12], int x)
     if(x > 8){return;}
 
     for(int i = 0; i < x; i++){
+        if(pw_found== 1){return;}
         letter_iterator(i);
-        password[i]=passchars[0];
     }
     
+    if(pw_found== 1){return;}
     x++;
     brute_forec(password, x); 
 }
@@ -64,6 +65,15 @@ int main(int argc, char const *argv[])
 
     //Tård utgave -> For(for) -> Med predefinert første og andre plass 
     //Kanskje til og med strekke det til fire første
+    // for(int i = 0; i < ALPHABET_SIZE; i++){
+    //     for(int j = 0; j < ALPHABET_SIZE; j++){
+    //         for(int k = 0; k <ALPHABET_SIZE; k++){
+    //             for(int y = 0; y < ALPHABET_SIZE; y++){
+    //                 //Start thread
+    //             }
+    //         }
+    //     }
+    // }
     brute_forec(password, 0);
     printf("THE ANSEWER IS: %s\n", correct_password);
     
