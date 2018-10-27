@@ -8,9 +8,6 @@
 static char salt[13], hash[50], correctPassword[25];
 static FILE* file;
 
-//static const char passchars[] =
-//"abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
-
 void setSalt()
 {
     strncpy(salt, hash, 12);

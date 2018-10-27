@@ -9,7 +9,7 @@ static const char passchars[] =
 "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE;
 static int pw_found = 0;
-static char salt[13], hash[50], correctPassword[25], password[12];
+static char salt[13], hash[50], correct_password[25], password[12];
 
 void setSalt()
 {
@@ -23,23 +23,32 @@ void test_password(char password[12]){
 
     if (strcmp(hash, encrypted) == 0){
         printf("\nFound: Password is %s\n", password);
-        strncpy(correctPassword, password, 40);
+        strncpy(correct_password, password, 40);
         pw_found = 1;
     }
 }
 
-void brute_forec(char password[12], int x) 
+void letter_iterator(int k)
 {
-    if(x > 6){return;}
-
-    for(int j = 0; j < x; j++){
-        for(int i = 0; i < ALPHABET_SIZE; i++){
-            password[j]=passchars[i];
-            test_password(password); 
-            if(pw_found== 1){return;}
+    if(pw_found== 1){return;}
+    for(int i = 0; i < ALPHABET_SIZE; i++){
+        password[k]=passchars[i];
+        test_password(password); 
+        if(k > 0){
+            letter_iterator(k-1);
         }
     }
-    password[x]=passchars[0];
+}
+
+void brute_forec(char password[12], int x)
+{
+    if(x > 8){return;}
+
+    for(int i = 0; i < x; i++){
+        letter_iterator(i);
+        password[i]=passchars[0];
+    }
+    
     x++;
     brute_forec(password, x); 
 }
@@ -52,8 +61,11 @@ int main(int argc, char const *argv[])
     strncpy(hash, argv[1], sizeof(hash));
 
     setSalt();
+
+    //Tård utgave -> For(for) -> Med predefinert første og andre plass 
+    //Kanskje til og med strekke det til fire første
     brute_forec(password, 0);
-    printf("%s", correctPassword);
+    printf("THE ANSEWER IS: %s\n", correct_password);
     
     return 0;
 }
