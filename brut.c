@@ -6,8 +6,9 @@
 #include <crypt.h>
 
 static const char passchars[] = 
-"abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
+    "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE;
+static int MAX_SIZE = 8;
 static int pw_found = 0;
 static char salt[13], hash[50], correct_password[25], password[12];
 
@@ -16,45 +17,45 @@ void setSalt()
     strncpy(salt, hash, 12);
 }
 
-void test_password(char password[12]){
-    printf("%s\n", password);
+// ‘A’,’B’,‘C’,
+// ‘AA’,’BA’,‘CA’,
+// ‘AB’,’BB’,‘CB’,
+// ‘AC’,’BC’,‘CC
 
-    char* encrypted = crypt(password, salt);
-
-    if (strcmp(hash, encrypted) == 0){
-        printf("\nFound: Password is %s\n", password);
-        strncpy(correct_password, password, 40);
-        pw_found = 1;
-        return;
-    }
-}
-
-void letter_iterator(int k)
+void brute_forec(char password[12], int x, int index)
 {
-    if(pw_found== 1|| k < 0){return;}
+    if(x > MAX_SIZE){return;}
     for(int i = 0; i < ALPHABET_SIZE; i++){
-        password[k]=passchars[i];
-        test_password(password); 
-        if(k > 0){letter_iterator(k-1);}
-        if(pw_found== 1){return;}
-    }
-}
+        if(pw_found == 1 || index < 0){return;}
+        password[index]=passchars[i];
 
-void brute_forec(char password[12], int x)
-{
-    if(x > 8){return;}
+        if (strlen(password) == x+1){
+            if(index == 0){
+                // printf("INDEX: %d, X: %d, I: %d ", index, x, i);
+                printf("%s\n", password);
 
-    for(int i = 0; i < x; i++){
-        if(pw_found== 1){return;}
-        letter_iterator(i);
+                char* encrypted = crypt(password, salt);
+
+                if (strcmp(hash, encrypted) == 0){
+                    printf("\nFound: Password is %s\n", password);
+                    strncpy(correct_password, password, 40);
+                    pw_found = 1;
+                    return;
+                }
+
+            }else{brute_forec(password, x, index-1);}
+        }else {
+            printf("INDEX: %d, X: %d, I: %d ", index, x, i);
+            printf("GHOST!\n");
+            
+        }
     }
     
-    if(pw_found== 1){return;}
-    x++;
-    brute_forec(password, x); 
+    if(x == index && pw_found == 0){
+        x++;
+        brute_forec(password, x, x);
+    }
 }
-
-
 
 int main(int argc, char const *argv[])
 {
@@ -62,19 +63,7 @@ int main(int argc, char const *argv[])
     strncpy(hash, argv[1], sizeof(hash));
 
     setSalt();
-
-    //Tård utgave -> For(for) -> Med predefinert første og andre plass 
-    //Kanskje til og med strekke det til fire første
-    // for(int i = 0; i < ALPHABET_SIZE; i++){
-    //     for(int j = 0; j < ALPHABET_SIZE; j++){
-    //         for(int k = 0; k <ALPHABET_SIZE; k++){
-    //             for(int y = 0; y < ALPHABET_SIZE; y++){
-    //                 //Start thread
-    //             }
-    //         }
-    //     }
-    // }
-    brute_forec(password, 0);
+    brute_forec(password, 0, 0);
     printf("THE ANSEWER IS: %s\n", correct_password);
     
     return 0;

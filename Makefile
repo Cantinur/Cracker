@@ -1,5 +1,5 @@
 TARGET = brut
-CFLAGS = -Wall -g -Wextra -std=c99 -pthread
+CFLAGS = -Wall -g -Werror -std=c99 -pthread
 CC = gcc
 CRYPT = -lcrypt
 
