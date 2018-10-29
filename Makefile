@@ -1,4 +1,4 @@
-TARGET = brut
+TARGET = bruteThread
 CFLAGS = -Wall -g -Werror -std=c99 -pthread
 CC = gcc
 CRYPT = -lcrypt

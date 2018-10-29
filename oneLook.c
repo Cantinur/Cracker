@@ -20,12 +20,11 @@ void setFile()
 
 void find_in_file()
 {
-    char *encrypted, *password = (char*) calloc(20, sizeof(char));  
-    int i = 1;
-    while (i){
-        i = fscanf(file, "%s", password);
+    char *encrypted, *password = (char*) calloc(20, sizeof(char)); 
+
+    while (fscanf(file, "%s", password) != EOF){
         encrypted = crypt(password, salt);
-        printf("%d -> %s\n", i,  password);
+        printf(" -> %s\n",  password);
 
         if (strcmp(hash,encrypted) == 0){
             strncpy(correctPassword, password, 25);
