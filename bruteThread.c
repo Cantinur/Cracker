@@ -87,16 +87,16 @@ int main(int argc, char const *argv[])
     // pthread_attr_t attr;
     // pthread_attr_init(&attr);
     pthread_t tids[1];
-    struct data arg[ALPHABET_SIZE];
+    struct data arg[1];
 
-    for(int j = 0; j < ALPHABET_SIZE; j++){
+    for(int j = 0; j < 1; j++){
         arg[j].x = j;
         //arg[j].password = calloc(12, sizeof(char));
         // arg[j].password[0] = passchars[j];
         pthread_create(&tids[j], NULL, force, &arg[j]);
     }
 
-    for(int j = 0; j < ALPHABET_SIZE; j++){
+    for(int j = 0; j < 1; j++){
         pthread_join(tids[j], NULL);
         //free(arg[j].password);
         // free(arg[j].encrypted);
