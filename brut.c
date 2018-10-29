@@ -6,8 +6,8 @@
 #include <crypt.h>
 #include <pthread.h>
 
-static const char passchars[] = "ABC";
-    //"abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
+static const char passchars[] = //"ABC";
+    "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE;
 static int MAX_SIZE;
 static int pw_found = 0;
@@ -23,7 +23,7 @@ void setSalt()
 // ‘AB’,’BB’,‘CB’,
 // ‘AC’,’BC’,‘CC
 
-void brute_forec(char password[12], int x, int index)
+void brute_force(char password[12], int x, int index)
 {
     if(x > MAX_SIZE){return;}
     for(int i = 0; i < ALPHABET_SIZE; i++){
@@ -43,12 +43,12 @@ void brute_forec(char password[12], int x, int index)
                 return;
             }
 
-        }else{brute_forec(password, x, index-1);}
+        }else{brute_force(password, x, index-1);}
     }
     
     if(x == index && pw_found == 0){
         x++;
-        brute_forec(password, x, x);
+        brute_force(password, x, x);
     }
 }
 
@@ -59,7 +59,7 @@ int main(int argc, char const *argv[])
     strncpy(hash, argv[1], sizeof(hash));
 
     setSalt();
-    brute_forec(password, 0, 0);
+    brute_force(password, 0, 0);
     printf("THE ANSEWER IS: %s\n", correct_password);
     
     return 0;
