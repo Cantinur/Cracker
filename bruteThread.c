@@ -6,10 +6,12 @@
 #include <crypt.h>
 #include <pthread.h>
 
-static const char passchars[] = "ABC";
-    //"abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
+static const char passchars[] = //"ABC";
+    "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE;
 static int MAX_SIZE;
+
+/*--------------------------------------*/
 static int pw_found = 0;
 static char salt[13], hash[50], correct_password[25];
 static pthread_mutex_t lock;
@@ -19,12 +21,12 @@ void setSalt()
     strncpy(salt, hash, 12);
 }
 
-void check(char password[12])
+void check(char* password)
 {
     struct crypt_data data;
     data.initialized = 0;
 
-    printf("%s\r", password);
+    printf("%s\n", password);
     char* encrypt = crypt_r(password, salt, &data);
 
     if (strcmp(hash, encrypt) == 0){
@@ -33,18 +35,15 @@ void check(char password[12])
         strncpy(correct_password, password, 40);
         pw_found = 1;
         pthread_mutex_unlock(&lock);
-        return;
     }
-    //free(encrypt);
-    //free(data);
 }
+/*--------------------------------------*/
 
 // ‘A’,’B’,‘C’,
 // ‘AA’,’BA’,‘CA’,
 // ‘AB’,’BB’,‘CB’,
 // ‘AC’,’BC’,‘CC’
-
-void brute_force(char password[12], int x, int index)
+void brute_force(char* password, int x, int index)
 {
     if(x > MAX_SIZE){return;}
     if(x == 1){check(password);}
@@ -62,17 +61,18 @@ void brute_force(char password[12], int x, int index)
         x++;
         brute_force(password, x, x);
     }
+    return;
 }
 
 struct data{
-    char password[12];
+    char* password;
     int x;
 };
 
 void* force(void* arg)
 {
     struct data *arg_struct = (struct data*) arg;
-    brute_force(arg_struct->password, arg_struct->x,  arg_struct->x);    
+    brute_force(arg_struct->password, arg_struct->x,  arg_struct->x);      
     pthread_exit(0);
 }
 
@@ -86,22 +86,21 @@ int main(int argc, char const *argv[])
 
     // pthread_attr_t attr;
     // pthread_attr_init(&attr);
-    pthread_t tids[1];
-    struct data arg[1];
+    pthread_t tids[ALPHABET_SIZE];
+    struct data arg[ALPHABET_SIZE];
 
-    for(int j = 0; j < 1; j++){
-        arg[j].x = j;
-        //arg[j].password = calloc(12, sizeof(char));
-        // arg[j].password[0] = passchars[j];
+    for(int j = 0; j < ALPHABET_SIZE; j++){
+        arg[j].x = 1;
+        arg[j].password = calloc(MAX_SIZE, sizeof(char));
+        arg[j].password[0] = passchars[j];
+        //printf("PASSWORD: %s\n", arg[j].password);
         pthread_create(&tids[j], NULL, force, &arg[j]);
     }
 
-    for(int j = 0; j < 1; j++){
+    for(int j = 0; j < ALPHABET_SIZE; j++){
         pthread_join(tids[j], NULL);
-        //free(arg[j].password);
-        // free(arg[j].encrypted);
+        free(arg[j].password);
     }
     printf("THE ANSEWER IS: %s\n", correct_password);
-    
     return 0;
 }
