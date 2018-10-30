@@ -75,6 +75,6 @@ int main(int argc, char const *argv[])
     strncpy(hash, argv[1], 50);
     setSalt();
     open_file_in_memory();
-    printf("ANSWER: %s\n", correct_password);
+    printf(": %s\n", correct_password);
     return 0;
 }
