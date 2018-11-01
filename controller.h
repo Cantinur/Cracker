@@ -1,4 +1,4 @@
 int found_password();
-void setSalt();
+void split_hash_and_salt(char* arg);
 void print_answer();
 void check(char* password);

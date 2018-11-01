@@ -17,7 +17,7 @@ int found_password()
 
 void print_answer()
 {
-    printf((found_password())? "Found: Password is %s\n", correct_password : "Did not find the correct answer\n");
+    printf((found_password()) ? "Found: Password is %s\n" : "Did not find the correct answer\n", correct_password );
 }
 
 void split_hash_and_salt(char* arg)
@@ -34,7 +34,7 @@ void check(char* password)
     //printf("%s\n", password);
     char* encrypt = crypt_r(password, salt, &data);
 
-    if (strcmp(hash, encrypt) == 0){
+    if (strcmp(&hash[12], &encrypt[12]) == 0){
         pthread_mutex_lock(&lock);
         strncpy(correct_password, password, 40);
         pw_found = 1;

@@ -1,13 +1,19 @@
-TARGET = oneLook
+TARGET = bruteThread
 CFLAGS = -Wall -g -Werror -std=c99 -pthread
 CC = gcc
 CRYPT = -lcrypt
 
-$(TARGET): $(TARGET).o
-	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).o $(CRYPT)
+$(TARGET): controller.o $(TARGET).o 
+	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).o controller.o $(CRYPT)
 
-$(TARGET).o: $(TARGET).c
-	$(CC) $(CFLAGS) -c -o $(TARGET).o $(TARGET).c 
+oneLook.o: oneLook.c
+	$(CC) $(CFLAGS) -c -o oneLook.o oneLook.c 
+
+bruteThread.o: bruteThread.c
+	$(CC) $(CFLAGS) -c -o bruteThread.o bruteThread.c 
+
+controller.o: controller.c
+	$(CC) $(CFLAGS) -c -o controller.o controller.c 
 
 clean: rm *.o $(TARGET)
 

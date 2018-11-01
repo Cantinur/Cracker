@@ -8,12 +8,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
-
 #include "controller.h"
 
 static char* dataMap;
 static struct stat st;
-static struct data{
+
+struct data{
     int start;
     int end;
 };
@@ -47,17 +47,19 @@ void open_file_in_memory(int num_thread)
     if(fstat(fd,&st) == -1){
         perror("COULD NOT GET FILE SIZE");
     }
+
     dataMap = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
 
     pthread_t tids[num_thread];
     struct data arg[num_thread];
     int chunk = st.st_size/num_thread;
+
     for (int i = 0; i < num_thread; i++){
         arg[i].start = chunk*i;
-        arg[i].end = ((i+1)*chunk)+(i == 0 ? st.st_size%num_thread : 0 );
+        arg[i].end = (i == num_thread-1) ?((chunk*(i+1)) + st.st_size%num_thread) : chunk*(i+1) ;
         pthread_create(&tids[i], NULL, look_in_fil_runner, &arg[i]);
-        
     }
+
     for (int i = 0; i < num_thread; i++){
         pthread_join(tids[i], NULL);
     }
@@ -68,7 +70,7 @@ void open_file_in_memory(int num_thread)
 
 int main(int argc, char const *argv[])
 {
-    split_hash_and_salt(argv[1]);
+    split_hash_and_salt((char*)argv[1]);
     open_file_in_memory(3);
     print_answer();
     return 0;
