@@ -3,42 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <crypt.h>
 #include <pthread.h>
-
-//Includes for MMAP
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
-/*--------------------------------------*/
-static int pw_found = 0;
-static char salt[13], hash[50], correct_password[25];
-static pthread_mutex_t lock;
-
-void setSalt()
-{
-    strncpy(salt, hash, 12);
-}
-
-void check(char* password)
-{
-    struct crypt_data data;
-    data.initialized = 0;
-
-    //printf("%s\n", password);
-    char* encrypt = crypt_r(password, salt, &data);
-
-    if (strcmp(hash, encrypt) == 0){
-        pthread_mutex_lock(&lock);
-        printf("\nFound: Password is %s\n", password);
-        strncpy(correct_password, password, 40);
-        pw_found = 1;
-        pthread_mutex_unlock(&lock);
-    }
-}
-/*--------------------------------------*/
+#include "controller.h"
 
 static char* dataMap;
 static struct stat st;
@@ -64,7 +35,7 @@ void* look_in_fil_runner(void* arg)
             j = 0;
             if(i > arg_struct->end){break;}
         }
-        if(pw_found == 1){break;}
+        if(found_password() == 1){break;}
         i++;
     }
     pthread_exit(0);
@@ -98,9 +69,8 @@ void open_file_in_memory(int num_thread)
 
 int main(int argc, char const *argv[])
 {
-    strncpy(hash, argv[1], 50);
-    setSalt();
+    split_hash_and_salt(argv[1]);
     open_file_in_memory(3);
-    printf("CORRECT: %s\n", correct_password);
+    print_answer();
     return 0;
 }

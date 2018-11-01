@@ -5,39 +5,12 @@
 #include <string.h>
 #include <crypt.h>
 #include <pthread.h>
+#include "controller.h"
 
 static const char passchars[] = //"ABC";
     "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE;
 static int MAX_SIZE;
-
-/*--------------------------------------*/
-static int pw_found = 0;
-static char salt[13], hash[50], correct_password[25];
-static pthread_mutex_t lock;
-
-void setSalt()
-{
-    strncpy(salt, hash, 12);
-}
-
-void check(char* password)
-{
-    struct crypt_data data;
-    data.initialized = 0;
-
-    printf("%s\n", password);
-    char* encrypt = crypt_r(password, salt, &data);
-
-    if (strcmp(hash, encrypt) == 0){
-        pthread_mutex_lock(&lock);
-        printf("\nFound: Password is %s\n", password);
-        strncpy(correct_password, password, 40);
-        pw_found = 1;
-        pthread_mutex_unlock(&lock);
-    }
-}
-/*--------------------------------------*/
 
 // ‘A’,’B’,‘C’,
 // ‘AA’,’BA’,‘CA’,
@@ -48,7 +21,7 @@ void brute_force(char* password, int x, int index)
     if(x > MAX_SIZE){return;}
     if(x == 1){check(password);}
     for(int i = 0; i < ALPHABET_SIZE; i++){
-        if(pw_found == 1 || index < 0){return;}
+        if(found_password() == 1 || index < 0){return;}
         password[index]=passchars[i];
 
         if(index == 1){
@@ -57,7 +30,7 @@ void brute_force(char* password, int x, int index)
         }else{brute_force(password, x, index-1);}
     }
     
-    if(x == index && pw_found == 0){
+    if(x == index && found_password() == 0){
         x++;
         brute_force(password, x, x);
     }
@@ -80,9 +53,8 @@ int main(int argc, char const *argv[])
 {
     ALPHABET_SIZE = strlen(passchars);
     MAX_SIZE = ALPHABET_SIZE-1;
-    strncpy(hash, argv[1], sizeof(hash));
 
-    setSalt();
+    split_hash_and_salt(argv[1]);
 
     // pthread_attr_t attr;
     // pthread_attr_init(&attr);
