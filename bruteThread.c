@@ -18,13 +18,14 @@ static int MAX_SIZE;
 // ‘AC’,’BC’,‘CC’
 void brute_force(char* password, int x, int index)
 {
-    if(x > MAX_SIZE){return;}
+    //if(x > MAX_SIZE){return;}
     if(x == 1){check(password);}
     for(int i = 0; i < ALPHABET_SIZE; i++){
-        if(found_password() == 1 || index < 0){return;}
+        if(found_password() == 1){return;}
         password[index]=passchars[i];
 
         if(index == 1){
+            // for (int j = start; j <= end; j++)
              check(password);
 
         }else{brute_force(password, x, index-1);}
@@ -34,7 +35,6 @@ void brute_force(char* password, int x, int index)
         x++;
         brute_force(password, x, x);
     }
-    return;
 }
 
 struct data{
@@ -51,13 +51,11 @@ void* force(void* arg)
 
 int main(int argc, char const *argv[])
 {
-    ALPHABET_SIZE = strlen(passchars);
-    MAX_SIZE = ALPHABET_SIZE-1;
-
     split_hash_and_salt(argv[1]);
 
-    // pthread_attr_t attr;
-    // pthread_attr_init(&attr);
+    ALPHABET_SIZE = strlen(passchars);
+    //MAX_SIZE = ALPHABET_SIZE-1;
+
     pthread_t tids[ALPHABET_SIZE];
     struct data arg[ALPHABET_SIZE];
 
@@ -65,7 +63,6 @@ int main(int argc, char const *argv[])
         arg[j].x = 1;
         arg[j].password = calloc(MAX_SIZE, sizeof(char));
         arg[j].password[0] = passchars[j];
-        //printf("PASSWORD: %s\n", arg[j].password);
         pthread_create(&tids[j], NULL, force, &arg[j]);
     }
 
@@ -73,6 +70,7 @@ int main(int argc, char const *argv[])
         pthread_join(tids[j], NULL);
         free(arg[j].password);
     }
-    printf("THE ANSEWER IS: %s\n", correct_password);
+
+    print_answer();
     return 0;
 }

@@ -13,8 +13,7 @@
 
 static char* dataMap;
 static struct stat st;
-
-struct data{
+static struct data{
     int start;
     int end;
 };
@@ -26,7 +25,7 @@ void* look_in_fil_runner(void* arg)
     int j = 0;
     int i = arg_struct->start;
 
-    while (j < 41){
+    while (j <= 40){
         if (dataMap[i] != '\n'){
             password[j++] = dataMap[i];
         }else{
