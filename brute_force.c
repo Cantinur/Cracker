@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <unistd.h>
 #include "controller.h"
 
 static const char passchars[] = "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
-static int ALPHABET_SIZE;
+static int ALPHABET_SIZE, WAIT;
 
 void brute_force(char* password, int length, int index, int start, int end)
 {
@@ -54,6 +55,7 @@ void* brute_force_runner(void* arg)
 {
     struct data *arg_struct = (struct data*) arg;
     brute_force( arg_struct->password, arg_struct->length, arg_struct->length, arg_struct->start, arg_struct->end);      
+    WAIT--;
     pthread_exit(0);
 }
 
@@ -66,6 +68,7 @@ void activate_brute_force(int num_thread)
     
     num_thread = 3;
     int chunk = ALPHABET_SIZE/num_thread;
+    WAIT = num_thread;
 
     printf("Activate Brute Forcen Attack!\n");
     
@@ -79,7 +82,9 @@ void activate_brute_force(int num_thread)
         
         pthread_create(&tids[i], NULL, brute_force_runner, &arg[i]);
     }
-        
+    printf("Starting wait.\n");
+    printf("This might take awhile...\n");
+
     for(int i = 0; i < num_thread; i++)
     {
         pthread_join(tids[i], NULL);

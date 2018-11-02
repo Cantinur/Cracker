@@ -26,13 +26,33 @@ void logo()
 
 void found()
 {
-    printf("___________________   ____ __________  ________   \n");
-    printf("\\_   _____/\\_____  \\ |    |   \\      \\ \\______ \\  \n");
-    printf("|    __)   /   |   \\|    |   /   |   \\ |    |  \\ \n");
-    printf("|     \\   /    |    \\    |  /    |    \\|    `   \\\n");
-    printf("\\___  /   \\_______  /______/\\____|__  /_______  /\n");
-    printf("     \\/            \\/                \\/        \\/ \n");
     printf("\n");
+    printf(" ********   *******   **     ** ****     ** *******  \n");
+    printf("/**/////   **/////** /**    /**/**/**   /**/**////** \n");
+    printf("/**       **     //**/**    /**/**//**  /**/**    /**\n");
+    printf("/******* /**      /**/**    /**/** //** /**/**    /**\n");
+    printf("/**////  /**      /**/**    /**/**  //**/**/**    /**\n");
+    printf("/**      //**     ** /**    /**/**   //****/**    ** \n");
+    printf("/**       //*******  //******* /**    //***/*******  \n");
+    printf("//         ///////    ///////  //      /// ///////   \n");
+    printf("\n");
+}
+
+int set_threads()
+{
+    int user_input = 1;
+    printf("Please type in how many threads you would like to start: ");
+    scanf("%d", &user_input);
+
+    return user_input;
+}
+
+char* set_hash()
+{
+    char local_hash[50];
+    printf("Please type in a valide hash: ");
+    scanf("%s", &local_hash);
+    return local_hash;
 }
 
 int found_password()

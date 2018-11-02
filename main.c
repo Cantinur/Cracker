@@ -12,9 +12,11 @@ int main(int argc, char const *argv[])
 {
     logo();
     activate_timer();
-    split_hash_and_salt((char*) argv[1]);
+
+    char* arg =  argv[1] ? (char*) argv[1] : set_hash();
+    split_hash_and_salt(arg);
     
-    int num_thread = 3; //argv[2] ? atoi(argv[2]) : 1;
+    int num_thread = argv[2] ? atoi(argv[2]) : set_threads();
     
     open_file(num_thread);
     
