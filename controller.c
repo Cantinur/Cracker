@@ -38,6 +38,12 @@ void found()
     printf("\n");
 }
 
+void split_hash_and_salt(char* arg)
+{
+    strncpy(hash, arg, 50);
+    strncpy(salt, hash, 12);
+}
+
 int set_threads()
 {
     int user_input = 1;
@@ -47,23 +53,20 @@ int set_threads()
     return user_input;
 }
 
-char* set_hash()
+void set_hash(char* arg)
 {
-    char local_hash[50];
-    printf("Please type in a valide hash: ");
-    scanf("%s", &local_hash);
-    return local_hash;
+    if(!arg)
+    {
+        printf("Please type in a valide hash: ");
+        scanf("%s", arg);
+    }
+
+    split_hash_and_salt(arg);
 }
 
 int found_password()
 {
     return pw_found;
-}
-
-void split_hash_and_salt(char* arg)
-{
-    strncpy(hash, arg, 50);
-    strncpy(salt, hash, 12);
 }
 
 unsigned long get_time()
@@ -82,18 +85,19 @@ void print_time()
 {
     if(end != 0)
         {
-            int secunds = ( (end - start) / 1000 / 1000 ) % 60;
-            int minutes = secunds / 60;
-            int hours = minutes / 60;
+            int ms = ( (end - start) / 1000 / 1000 );
+            int s =  ms % 60;
+            int m = ms / 60;
+            int h = m / 60;
             
-            if (hours > 0)
-                printf("It took %d:%d:%d minutes before the \n", hours, minutes, secunds);
+            if (h > 0)
+                printf("It took %dh %dm %ds before the \n", h, m, s);
             
-            else if (minutes > 0)
-                printf("It took %d:%d minutes before the \n", minutes, secunds);
+            else if (m > 0)
+                printf("It took %dm %ds before the \n", m, s);
             
             else
-                printf("The program run for %d seconds\n", secunds);
+                printf("The program run for %ds\n", s);
         }
         
     else
