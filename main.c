@@ -19,7 +19,7 @@ int main(int argc, char const *argv[])
     open_file(num_thread);
     
     if (found_password() == 0)
-        run_brute_force(num_thread);
+        activate_brute_force(num_thread);
 
     print_answer();
     return 0;

@@ -1,4 +1,5 @@
 void logo();
+void found();
 int found_password();
 void split_hash_and_salt(char* arg);
 unsigned long get_time();

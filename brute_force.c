@@ -14,6 +14,7 @@ void brute_force(char* password, int length, int index, int start, int end)
     if(length == 1)
         check(password);
 
+
     for(int i = 0; i < ALPHABET_SIZE; i++)
     {
         if(found_password())
@@ -56,7 +57,7 @@ void* brute_force_runner(void* arg)
     pthread_exit(0);
 }
 
-void run_brute_force(int num_thread)
+void activate_brute_force(int num_thread)
 {
     ALPHABET_SIZE = strlen(passchars);
 
@@ -78,7 +79,7 @@ void run_brute_force(int num_thread)
         
         pthread_create(&tids[i], NULL, brute_force_runner, &arg[i]);
     }
-
+        
     for(int i = 0; i < num_thread; i++)
     {
         pthread_join(tids[i], NULL);

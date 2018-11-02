@@ -24,6 +24,17 @@ void logo()
     printf("\n");
 }
 
+void found()
+{
+    printf("___________________   ____ __________  ________   \n");
+    printf("\\_   _____/\\_____  \\ |    |   \\      \\ \\______ \\  \n");
+    printf("|    __)   /   |   \\|    |   /   |   \\ |    |  \\ \n");
+    printf("|     \\   /    |    \\    |  /    |    \\|    `   \\\n");
+    printf("\\___  /   \\_______  /______/\\____|__  /_______  /\n");
+    printf("     \\/            \\/                \\/        \\/ \n");
+    printf("\n");
+}
+
 int found_password()
 {
     return pw_found;
@@ -56,10 +67,10 @@ void print_time()
             int hours = minutes / 60;
             
             if (hours > 0)
-                printf("It took %d:%d:%d minutes before the \n",hours, minutes, secunds);
+                printf("It took %d:%d:%d minutes before the \n", hours, minutes, secunds);
             
             else if (minutes > 0)
-                printf("It took %d:%d minutes before the \n",minutes, secunds);
+                printf("It took %d:%d minutes before the \n", minutes, secunds);
             
             else
                 printf("The program run for %d seconds\n", secunds);
@@ -71,14 +82,13 @@ void print_time()
 
 void print_answer()
 {
-    printf( 
-        found_password() ? 
-            "Password is %s\n" 
-        : 
-            "Did not find the correct answer\nI'm sorry to disappoint you\n"
-        
-        , correct_password
-    );
+    if(found_password())
+        {
+            found();
+            printf("Password is %s\n", correct_password);
+        }
+    else 
+        printf("Did not find the correct answer\nI'm sorry to disappoint you\n");
 
     print_time();
 }
@@ -97,7 +107,7 @@ void check(char* password)
     //printf("%s\n", password);
     char* encrypt = crypt_r(password, salt, &data);
 
-    if (strcmp(hash, encrypt) == 0)
+    if (!strcmp(hash, encrypt))
     {
         pthread_mutex_lock(&lock);
         strncpy(correct_password, password, 40);

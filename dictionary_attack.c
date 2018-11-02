@@ -12,11 +12,10 @@
 #include <unistd.h>
 #include "controller.h"
 
-static char* dataMap;
-static struct stat st;
+static char* data_map, resources[100][100];
 static DIR *dp;
 static struct dirent *ep;
-static char resources[3][14];
+static int number_of_files = 0;
 
 struct data
 {
@@ -32,9 +31,11 @@ void find_files()
             int i = 0;
             while ( (ep = readdir (dp)) )
                 if (ep->d_name[0] != 46)
-                    strncpy(resources[i++],  ep->d_name, 14);
+                    strncpy(resources[i++],  ep->d_name, 50);
                 
             (void) closedir (dp);
+
+            number_of_files = i;
         }
     else
         perror ("Couldn't open the directory");
@@ -54,7 +55,7 @@ void* look_in_fil_runner(void* arg)
         if(found_password()) 
             break;
 
-        if (dataMap[i] == '\n')
+        if (data_map[i] == '\n')
             {
                 check(password);
                 j = 0;
@@ -65,7 +66,7 @@ void* look_in_fil_runner(void* arg)
                 memset(password, 0, strlen (password) );
             }
         else
-            password[j++] = dataMap[i];
+            password[j++] = data_map[i];
 
         i++;
     }
@@ -74,35 +75,37 @@ void* look_in_fil_runner(void* arg)
 
 void open_file(int num_thread)
 {   
-    find_files();
 
-    for(int i = 0; i < 3; i++)
+    find_files();
+    printf("Activate Dictionary Attack!\n");
+
+    for(int i = 0; i < number_of_files; i++)
     {
+        struct stat st;
+
         if(found_password())
             break;
 
-        char fil_path[30] = "./resources/";
+        char fil_path[100] = "./resources/";
         char* file_name = resources[i];
         strcat(fil_path, file_name);
 
-        printf("Locking in file: %s\n", file_name);
-
         int fd = open(fil_path, O_RDONLY, 0);
 
-        if(fstat(fd,&st) == -1)
+        if(fstat( fd , &st ) == -1)
             perror("COULD NOT GET FILE SIZE");
         
-        dataMap = mmap( NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
+        printf("File %d out of %d: %s\n", i+1, number_of_files, file_name);
+
+        data_map = mmap( NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
 
         pthread_t tids[num_thread];
         struct data arg[num_thread];
         int chunk = st.st_size / num_thread;
-
-        printf("Activate Dictionary Attack!\n");
         
         for (int i = 0; i <  num_thread; i++)
         {
-            arg[i].start = chunk*i;
+            arg[i].start = chunk * i;
             arg[i].end = ( ( i + 1 ) * chunk ) + (i == num_thread - 1 ? st.st_size % num_thread : 0 );
             pthread_create(&tids[i], NULL, look_in_fil_runner, &arg[i]);
         }
@@ -110,7 +113,8 @@ void open_file(int num_thread)
         for (int i = 0; i < num_thread; i++)
             pthread_join(tids[i], NULL);
 
-        munmap(dataMap, st.st_size);
+        munmap(data_map, st.st_size);
         close(fd);
     }
+    
 }
