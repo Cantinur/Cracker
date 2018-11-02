@@ -32,7 +32,7 @@ void brute_force(char password[12], int x, int index)
 
         if(index == 0){
 
-            printf("%s\n", password);
+            // printf("%s\n", password);
 
             char* encrypted = crypt(password, salt);
 

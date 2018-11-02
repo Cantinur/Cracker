@@ -10,10 +10,20 @@ static int pw_found = 0;
 static char salt[13], hash[50], correct_password[25];
 static pthread_mutex_t lock;
 
-int found_password()
+void logo()
 {
-    return pw_found;
+    printf("                     _             \n");
+    printf("                    | |            \n");
+    printf("  ___ _ __ __ _  ___| | _____ _ __ \n");
+    printf(" / __| '__/ _` |/ __| |/ / _ \\ '__|\n");
+    printf("| (__| | | (_| | (__|   <  __/ |   \n");
+    printf(" \\___|_|  \\__,_|\\___|_|\\_\\___|_|   \n");
+    printf("\n");
 }
+
+
+int found_password()
+{return pw_found;}
 
 void print_answer()
 {
@@ -30,11 +40,10 @@ void check(char* password)
 {
     struct crypt_data data;
     data.initialized = 0;
-
     //printf("%s\n", password);
     char* encrypt = crypt_r(password, salt, &data);
 
-    if (strcmp(&hash[12], &encrypt[12]) == 0){
+    if (strcmp(hash, encrypt) == 0){
         pthread_mutex_lock(&lock);
         strncpy(correct_password, password, 40);
         pw_found = 1;

@@ -21,42 +21,47 @@ struct data{
 void* look_in_fil_runner(void* arg)
 {
     struct data *arg_struct = (struct data*) arg;
-    char password[40] = {'\0'};
+    char password[50] = {'\0'};
     int j = 0;
     int i = arg_struct->start;
+    printf("START: %d\n", i);
+    printf("END: %d\n", arg_struct->end);
 
-    while (j <= 40){
+    while (j < 50){
+        if(found_password()){break;}
         if (dataMap[i] != '\n'){
             password[j++] = dataMap[i];
         }else{
             check(password);
-            memset(password,0,strlen(password));
             j = 0;
-            if(i > arg_struct->end){break;}
+            if(i > arg_struct->end){
+                printf("Last from Thread %s\n", password);
+                break;
+            }
+            memset(password, 0, strlen(password));
         }
-        if(found_password() == 1){break;}
         i++;
     }
     pthread_exit(0);
 }
 
-void open_file_in_memory(int num_thread)
+void open_file(int num_thread)
 {   
     int fd = open("./dictionary.txt", O_RDONLY, 0);
 
     if(fstat(fd,&st) == -1){
         perror("COULD NOT GET FILE SIZE");
     }
-
+    
     dataMap = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
 
     pthread_t tids[num_thread];
     struct data arg[num_thread];
     int chunk = st.st_size/num_thread;
 
-    for (int i = 0; i < num_thread; i++){
+    for (int i = 0; i <  num_thread; i++){
         arg[i].start = chunk*i;
-        arg[i].end = (i == num_thread-1) ?((chunk*(i+1)) + st.st_size%num_thread) : chunk*(i+1) ;
+        arg[i].end = ((i+1)*chunk)+(i == num_thread-1 ? st.st_size%num_thread : 0 );
         pthread_create(&tids[i], NULL, look_in_fil_runner, &arg[i]);
     }
 
@@ -66,12 +71,4 @@ void open_file_in_memory(int num_thread)
 
     munmap(dataMap, st.st_size);
     close(fd);
-}
-
-int main(int argc, char const *argv[])
-{
-    split_hash_and_salt((char*)argv[1]);
-    open_file_in_memory(3);
-    print_answer();
-    return 0;
 }
