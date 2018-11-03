@@ -8,7 +8,7 @@
 #include "controller.h"
 
 static const char passchars[] = "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
-static int ALPHABET_SIZE, WAIT;
+static int ALPHABET_SIZE;
 
 void brute_force(char* password, int length, int index, int start, int end)
 {
@@ -24,16 +24,16 @@ void brute_force(char* password, int length, int index, int start, int end)
         password[index] = passchars[i];
 
         if(index == 1)
+        {
+            for (int j = start; j < end; j++)
             {
-                for (int j = start; j < end; j++)
-                {
-                    password[0] = passchars[j];
-                    check(password);
+                password[0] = passchars[j];
+                check(password);
 
-                    if(found_password())
-                        break;
-                }
+                if(found_password())
+                    break;
             }
+        }
         else
             brute_force(password, length, index-1, start, end);
     }
@@ -55,7 +55,6 @@ void* brute_force_runner(void* arg)
 {
     struct data *arg_struct = (struct data*) arg;
     brute_force( arg_struct->password, arg_struct->length, arg_struct->length, arg_struct->start, arg_struct->end);      
-    WAIT--;
     pthread_exit(0);
 }
 
@@ -68,7 +67,6 @@ void activate_brute_force(int num_thread)
     
     num_thread = 3;
     int chunk = ALPHABET_SIZE/num_thread;
-    WAIT = num_thread;
 
     printf("Activate Brute Forcen Attack!\n");
     
@@ -82,6 +80,7 @@ void activate_brute_force(int num_thread)
         
         pthread_create(&tids[i], NULL, brute_force_runner, &arg[i]);
     }
+
     printf("Starting wait.\n");
     printf("This might take awhile...\n");
 

@@ -11,9 +11,12 @@ int main(int argc, char** argv)
 
 	char salt[13]="$1$abcdefgh$";
 	getrandom(salt+3,8,0);
-	for(unsigned int i=3;i<11;i++){
+	
+	for(unsigned int i=3;i<11;i++)
+	{
 		salt[i]=saltchars[salt[i] & 0x3f];
 	}
+	
 	char* encrypted=crypt(passwd,salt);
 	printf("%s\n", encrypted);
 	//free(encrypted);

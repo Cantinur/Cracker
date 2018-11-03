@@ -84,22 +84,21 @@ void activate_timer()
 void print_time()
 {
     if(end != 0)
-        {
-            int ms = ( (end - start) / 1000 / 1000 );
-            int s =  ms % 60;
-            int m = ms / 60;
-            int h = m / 60;
-            
-            if (h > 0)
-                printf("It took %dh %dm %ds before the \n", h, m, s);
-            
-            else if (m > 0)
-                printf("It took %dm %ds before the \n", m, s);
-            
-            else
-                printf("The program run for %ds\n", s);
-        }
+    {
+        int ms = ( (end - start) / 1000 / 1000 );
+        int s =  ms % 60;
+        int m = ms / 60;
+        int h = m / 60;
         
+        if (h > 0)
+            printf("It took %dh %dm %ds before the \n", h, m, s);
+        
+        else if (m > 0)
+            printf("It took %dm %ds before the \n", m, s);
+        
+        else
+            printf("The program run for %ds\n", s);
+    }
     else
         printf("You execuded before the code\n");
 }
