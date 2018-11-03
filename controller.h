@@ -1,7 +1,7 @@
 void logo();
 void found();
 int set_threads();
-void set_hash(char* arg);
+int set_hash(char* arg);
 int found_password();
 void split_hash_and_salt(char* arg);
 unsigned long get_time();
