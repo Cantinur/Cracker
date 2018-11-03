@@ -43,8 +43,11 @@ void split_hash_and_salt(char* arg)
     strncpy(salt, hash, 12);
 }
 
-int set_threads()
+int set_threads(char* arg)
 {
+    if (arg)
+        return atoi(arg);
+
     int user_input = 1;
     printf("Please type in how many threads you would like to start: ");
     scanf("%d", &user_input);
@@ -52,15 +55,18 @@ int set_threads()
     return user_input;
 }
 
-void set_hash(char* arg)
+int set_hash(char* arg)
 {
-    if(!arg)
+    if(arg)
     {
-        printf("Please type in a valide hash: ");
-        scanf("%s", arg);
+        split_hash_and_salt(arg);
+        return 1;
     }
-
-    split_hash_and_salt(arg);
+    
+    printf("Pleas enter a valid hash.\n");
+    printf("It should look somthing like this:\n");
+    printf("'$1$9779ofJE$c.p.EwsI57yV2xjeorQbs1'\n");
+    return 0;
 }
 
 int found_password()
@@ -82,14 +88,14 @@ void activate_timer()
 
 void print_time()
 {
-    if(end != 0)
+    if(end)
     {
-        int ms = ( (end - start) / 1000 / 1000 );
+        int ms = ((end - start) / 1000 / 1000);
         int s = ms % 60;
         int m = ms / 60;
         int h = m / 60;
       
-         if (h > 0)
+        if (h > 0)
             printf("It took %dh %dm %ds before the \n", h, m, s);
         
         else if (m > 0)
@@ -105,10 +111,10 @@ void print_time()
 void print_answer()
 {
     if(found_password())
-        {
-            found();
-            printf("Password is %s\n", correct_password);
-        }
+    {
+        found();
+        printf("Password is %s\n", correct_password);
+    }
     else 
         printf("Did not find the correct answer\nI'm sorry to disappoint you\n");
 
