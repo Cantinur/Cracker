@@ -115,18 +115,12 @@ void print_answer()
     print_time();
 }
 
-// void print_wait()
-// {
-//     printf("\rPasswords Tested: %d  ", passwordsTested);
-//     fflush(stdout);
-// }
-
 void check(char* password)
 {
     struct crypt_data data;
     data.initialized = 0;
 
-    printf("%s\r", password);
+    // printf("%s\r", password);
     char* encrypt = crypt_r(password, salt, &data);
 
     if (!strcmp(hash, encrypt))

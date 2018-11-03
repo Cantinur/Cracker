@@ -112,9 +112,7 @@ void open_file(int num_thread)
         }
 
         for (int i = 0; i < num_thread; i++)
-        {
             pthread_join(tids[i], NULL);
-        }
             
 
         munmap(data_map, st.st_size);

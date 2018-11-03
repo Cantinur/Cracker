@@ -10,7 +10,7 @@
 static const char passchars[] = "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE;
 
-int brute_force(char *password, int length, int index, int start, int end)
+void brute_force(char *password, int length, int index, int start, int end)
 {
     if(length == 1)
         check(password);
@@ -37,7 +37,6 @@ int brute_force(char *password, int length, int index, int start, int end)
         else
             brute_force(password, length, index - 1, start, end);
     }
-    return index;
 }
 
 typedef struct data
@@ -51,15 +50,8 @@ void* brute_force_runner(void *arg)
 {
     struct data *arg_struct = (struct data*) arg;
     
-    int i = arg_struct->length;
-   
-    while(!found_password())
-    {
-        int j = brute_force( arg_struct->password, i, i, arg_struct->start, arg_struct->end);
-
-        if (j == i)
-            i++;
-    }
+    for ( int i = arg_struct->length; !found_password(); i++)
+        brute_force( arg_struct->password, i, i, arg_struct->start, arg_struct->end);
 
     free(arg_struct->password);
     return NULL;
@@ -91,7 +83,5 @@ void activate_brute_force(int num_thread)
     printf("This might take awhile...\n");
 
     for (int i = 0; i < num_thread; i++)
-    {
         pthread_join(tids[i], NULL);
-    }
 }

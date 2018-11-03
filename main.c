@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
     
     activate_timer();
     
-    // open_file(num_thread);
+    open_file(num_thread);
     
     if ( !found_password() )
         activate_brute_force(num_thread);
