@@ -6,7 +6,6 @@
 #include <crypt.h>
 #include <pthread.h>
 #include <sys/time.h>
-#include <unistd.h>
 
 static int pw_found = 0;
 static char salt[13], hash[50], correct_password[25];
@@ -86,11 +85,11 @@ void print_time()
     if(end != 0)
     {
         int ms = ( (end - start) / 1000 / 1000 );
-        int s =  ms % 60;
+        int s = ms % 60;
         int m = ms / 60;
         int h = m / 60;
-        
-        if (h > 0)
+      
+         if (h > 0)
             printf("It took %dh %dm %ds before the \n", h, m, s);
         
         else if (m > 0)
@@ -127,15 +126,15 @@ void check(char* password)
     struct crypt_data data;
     data.initialized = 0;
 
-    //printf("%s\n", password);
+    printf("%s\r", password);
     char* encrypt = crypt_r(password, salt, &data);
 
     if (!strcmp(hash, encrypt))
     {
         pthread_mutex_lock(&lock);
+        end = get_time();
         strncpy(correct_password, password, 40);
         pw_found = 1;
-        end = get_time();
         pthread_mutex_unlock(&lock);
     }
 }

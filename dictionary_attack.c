@@ -12,15 +12,16 @@
 #include <unistd.h>
 #include "controller.h"
 
-static char* data_map, resources[100][100];
+static char *data_map, resources[100][100];
 static DIR *dp;
 static struct dirent *ep;
 static int number_of_files = 0;
 
-struct data
+typedef struct data
 {
     int start, end;    
-};
+
+} data_to_reader;
 
 void find_files()
 {
@@ -43,7 +44,7 @@ void find_files()
     free(ep);
 }
 
-void* look_in_fil_runner(void* arg)
+void* look_in_fil_runner(void *arg)
 {
     struct data *arg_struct = (struct data*) arg;
     char password[50] = { '\0' };
@@ -70,7 +71,7 @@ void* look_in_fil_runner(void* arg)
 
         i++;
     }
-    pthread_exit(0);
+    return NULL;
 }
 
 void open_file(int num_thread)
@@ -106,12 +107,15 @@ void open_file(int num_thread)
         for (int i = 0; i <  num_thread; i++)
         {
             arg[i].start = chunk * i;
-            arg[i].end = ( ( i + 1 ) * chunk ) + (i == num_thread - 1 ? st.st_size % num_thread : 0 );
+            arg[i].end = ((i + 1) * chunk) + (i == num_thread - 1 ? st.st_size % num_thread : 0);
             pthread_create(&tids[i], NULL, look_in_fil_runner, &arg[i]);
         }
 
         for (int i = 0; i < num_thread; i++)
+        {
             pthread_join(tids[i], NULL);
+        }
+            
 
         munmap(data_map, st.st_size);
         close(fd);

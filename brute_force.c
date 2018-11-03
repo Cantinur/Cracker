@@ -10,7 +10,7 @@
 static const char passchars[] = "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE;
 
-void brute_force(char* password, int length, int index, int start, int end)
+int brute_force(char *password, int length, int index, int start, int end)
 {
     if(length == 1)
         check(password);
@@ -35,27 +35,34 @@ void brute_force(char* password, int length, int index, int start, int end)
             }
         }
         else
-            brute_force(password, length, index-1, start, end);
+            brute_force(password, length, index - 1, start, end);
     }
-    
-    if(length == index && !found_password())
-    {
-        length++;
-        brute_force(password, length, length, start, end);
-    }
+    return index;
 }
 
 typedef struct data
 {
     char* password;
     int length, start, end;
-}data_struct;
 
-void* brute_force_runner(void* arg)
+}data_to_brute;
+
+void* brute_force_runner(void *arg)
 {
     struct data *arg_struct = (struct data*) arg;
-    brute_force( arg_struct->password, arg_struct->length, arg_struct->length, arg_struct->start, arg_struct->end);      
-    pthread_exit(0);
+    
+    int i = arg_struct->length;
+   
+    while(!found_password())
+    {
+        int j = brute_force( arg_struct->password, i, i, arg_struct->start, arg_struct->end);
+
+        if (j == i)
+            i++;
+    }
+
+    free(arg_struct->password);
+    return NULL;
 }
 
 void activate_brute_force(int num_thread)
@@ -66,7 +73,7 @@ void activate_brute_force(int num_thread)
     struct data arg[ALPHABET_SIZE];
     
     num_thread = 3;
-    int chunk = ALPHABET_SIZE/num_thread;
+    int chunk = ALPHABET_SIZE / num_thread;
 
     printf("Activate Brute Forcen Attack!\n");
     
@@ -76,17 +83,15 @@ void activate_brute_force(int num_thread)
         arg[i].password = calloc(50, sizeof(char));
         arg[i].start = chunk * i;
         arg[i].password[0] = passchars[arg[i].start];
-        arg[i].end = (i == num_thread-1) ?((chunk*(i+1)) + ALPHABET_SIZE%num_thread) : chunk*(i+1) ;
+        arg[i].end = (i == num_thread - 1) ?((chunk * ( i + 1 )) + ALPHABET_SIZE % num_thread) : chunk * (i + 1) ;
         
         pthread_create(&tids[i], NULL, brute_force_runner, &arg[i]);
     }
 
-    printf("Starting wait.\n");
     printf("This might take awhile...\n");
 
-    for(int i = 0; i < num_thread; i++)
+    for (int i = 0; i < num_thread; i++)
     {
         pthread_join(tids[i], NULL);
-        free(arg[i].password);
     }
 }
