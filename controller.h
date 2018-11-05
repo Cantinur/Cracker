@@ -3,7 +3,6 @@ void found();
 int set_threads();
 int set_hash(char* arg);
 int found_password();
-void split_hash_and_salt(char* arg);
 unsigned long get_time();
 void activate_timer();
 void print_time();

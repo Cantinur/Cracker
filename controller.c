@@ -37,12 +37,6 @@ void found()
     printf("\n");
 }
 
-void split_hash_and_salt(char* arg)
-{
-    strncpy(hash, arg, 50);
-    strncpy(salt, hash, 12);
-}
-
 int set_threads(char* arg)
 {
     if (arg)
@@ -59,7 +53,8 @@ int set_hash(char* arg)
 {
     if(arg)
     {
-        split_hash_and_salt(arg);
+        strncpy(hash, arg, 50);
+        strncpy(salt, hash, 12);
         return 1;
     }
     
