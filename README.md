@@ -33,7 +33,7 @@ I have tried to follow the code style manual designed by NASA in 1994 ([http://h
 
 The indentation is ment to make the code more readable. If you want to read more about the indentation style. You can read chapter 7 _STATEMENTS AND CONTROL FLOW_ in the style guid. 
 
-## Valgrind and memory leaks 
+## Valgrind and memory leaks
 This project should have no memory leaks when using Valgrind. This is salved by having the pthread functions `return NULL` in stead of `pthread_exit(0)`. Using the exit function results in the following error message from Valgrind.
 
 	36 bytes in 1 blocks are still reachable in loss record 1 of 4
@@ -60,7 +60,7 @@ I have added som ASCII art to my project. This is added in as `printf()` lines i
 #### Timer
 I have added a timer in my code. It starts right before the dictionary attack starts in main, and ends when one of the threads have found the correct answer. It will print depending on 
 
-### Mutex
+#### Mutex
 I have used mutex in order to ensure that only one thread can set the answer, and end the time it took for the code. 
 
 ### Dictionary Attack file

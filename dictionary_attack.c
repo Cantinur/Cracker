@@ -30,6 +30,7 @@ void find_files()
     if (dp != NULL)
         {
             int i = 0;
+            
             while ( (ep = readdir (dp)) )
                 if (ep->d_name[0] != 46)
                     strncpy(resources[i++],  ep->d_name, 50);
