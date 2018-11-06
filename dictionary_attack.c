@@ -11,17 +11,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "controller.h"
+#include "controller.h"
+#include "dictionary_attack.h"
 
 static char *data_map, resources[100][100];
 static DIR *dp;
 static struct dirent *ep;
 static int number_of_files = 0;
-
-typedef struct data
-{
-    int start, end;    
-
-} data_to_reader;
 
 void find_files()
 {
@@ -30,7 +26,6 @@ void find_files()
     if (dp != NULL)
         {
             int i = 0;
-            
             while ( (ep = readdir (dp)) )
                 if (ep->d_name[0] != 46)
                     strncpy(resources[i++],  ep->d_name, 50);

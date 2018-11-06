@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "controller.h"
+#include "brute_force.h"
 
 static const char passchars[] = "abcdefghikjlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+\"#&/()=?!@$|[]|{}";
 static int ALPHABET_SIZE, WAIT;
@@ -38,13 +39,6 @@ void brute_force(char *password, int length, int index, int start, int end)
             brute_force(password, length, index - 1, start, end);
     }
 }
-
-typedef struct data
-{
-    char* password;
-    int length, start, end;
-
-}data_to_brute;
 
 void* brute_force_runner(void *arg)
 {
